@@ -26,15 +26,20 @@ setTimeout(() => {
 
 }, 5000);
 
-function updateHTML(htmlString){
+function updateHTML(htmlString) {
     const tempElement = document.createElement('div');
-    tempElement.innerHTML=htmlString;
+    tempElement.innerHTML = htmlString;
 
-    const termsAndConditionsElement = tempElement.querySelectorAll('li a')[0];
-    if(termsAndConditionsElement){
-        termsAndConditionsElement.setAttribute('href','https://ssw.fr/terms-and-conditions/');
+    const standardRateElement = tempElement.querySelector('ul li:first-child');
+
+    const prepaidRateElement = tempElement.querySelector('ul li:last-child');
+    if (prepaidRateElement) {
+        prepaidRateElement.innerHTML=prepaidRateElement.innerHTML.replace('40h','37,5h');
+        const termsAndConditionsElement = prepaidRateElement.querySelector('a');
+        if (termsAndConditionsElement) {
+            termsAndConditionsElement.setAttribute('href', 'https://ssw.fr/terms-and-conditions/');
+        }
     }
-
     const updatedHTML = tempElement.innerHTML;
     tempElement.remove();
     return updatedHTML;
@@ -63,7 +68,6 @@ async function saveHTMLToClipboard(htmlString) {
     });
 
     await navigator.clipboard.write([clipboardItem]).
-        then(() => console.log("french clipboard Ok"),
+        then(() => console.log("Updated HTML for France wrote to clipboard!"),
             error => alert(error));
-
 }
