@@ -6,7 +6,7 @@
         {
           "matches": ["https://ssw.com.au/people/*/*"],
           "js": ["src/content-script.js"],
-          "css":["src/styles.css"],
+          "css":["src/assets/styles.css"],
           "run_at": "document_end"
         }
       ]

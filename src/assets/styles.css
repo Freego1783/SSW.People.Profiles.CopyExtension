@@ -1,0 +1,10 @@
+.copy-button {
+    position: relative;
+    bottom: 0;
+    right: 0;
+}
+
+.copy-img{
+    width:24px;
+    height: 24px;
+}
