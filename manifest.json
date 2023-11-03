@@ -1,13 +1,19 @@
 {
-    "manifest_version": 3,
-    "name": "SSW.People.Profiles.CopyExtension",
-    "version": "1.0.0",
-    "content_scripts": [
-        {
-          "matches": ["https://ssw.com.au/people/*/*"],
-          "js": ["src/content-script.js"],
-          "css":["src/assets/styles.css"],
-          "run_at": "document_end"
-        }
-      ]
+  "manifest_version": 3,
+  "name": "SSW.People.Profiles.CopyExtension",
+  "version": "1.0.0",
+  "content_scripts": [
+    {
+      "matches": ["https://ssw.com.au/people/*/*"],
+      "js": ["src/content-script.js"],
+      "css": ["src/assets/styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/assets/icons/*"],
+      "matches": ["*://*/*"]
+    }
+  ]
 }
