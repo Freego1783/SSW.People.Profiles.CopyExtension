@@ -30,16 +30,26 @@ function updateHTML(htmlString) {
     const tempElement = document.createElement('div');
     tempElement.innerHTML = htmlString;
 
-    const standardRateElement = tempElement.querySelector('ul li:first-child');
+    const bulletPointListElement = tempElement.querySelector('ul');
 
-    const prepaidRateElement = tempElement.querySelector('ul li:last-child');
-    if (prepaidRateElement) {
-        prepaidRateElement.innerHTML=prepaidRateElement.innerHTML.replace('40h','37,5h');
-        const termsAndConditionsElement = prepaidRateElement.querySelector('a');
+    const standardRateListItemElement = bulletPointListElement.querySelector('li:first-child');
+
+    const prepaidRateListItemElement = bulletPointListElement.querySelector('li:last-child');
+    if (prepaidRateListItemElement) {
+        prepaidRateListItemElement.innerHTML = prepaidRateListItemElement.innerHTML.replace('40h', '37,5h');
+        const termsAndConditionsElement = prepaidRateListItemElement.querySelector('a');
         if (termsAndConditionsElement) {
             termsAndConditionsElement.setAttribute('href', 'https://ssw.fr/terms-and-conditions/');
         }
     }
+
+    const locationElement = document.querySelector('svg.fa-location-dot').parentNode;
+    const location = locationElement.textContent;
+
+    const locationListItemElement = document.createElement('li');
+    locationListItemElement.innerText = "🗺️ Location: "+ location;
+    bulletPointListElement.appendChild(locationListItemElement);
+
     const updatedHTML = tempElement.innerHTML;
     tempElement.remove();
     return updatedHTML;
