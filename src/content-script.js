@@ -1,5 +1,5 @@
 async function main() {
-    const ratesCSV = chrome.runtime.getURL("src/assets/ratefs.csv");
+    const ratesCSV = chrome.runtime.getURL("src/assets/rates.csv");
     let csvData;
 
     await fetch(ratesCSV)
