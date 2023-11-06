@@ -1,58 +1,60 @@
-//TOOD: remove timeout and find a way to wait for whole page to load
-setTimeout(() => {
-    const iconImg = document.createElement('img');
-    iconImg.src = chrome.runtime.getURL('src/assets/icons/baguette.svg');
-    iconImg.classList.add('copy-img');
+async function main() {
+    const ratesCSV = chrome.runtime.getURL("src/assets/rates.csv");
+    let csvData;
 
-    const copyButton = document.createElement("button");
-    copyButton.className = "copy-button";
-    copyButton.appendChild(iconImg);
+    await fetch(ratesCSV)
+        .then((response) => response.text())
+        .then((csvContent) => {
+            Papa.parse(csvContent, {
+                delimiter: ";",
+                header: true,
+                complete: function (results) {
+                    if (results.data.length > 0) {
+                        csvData = results.data;
+                    }
+                },
+            });
+        });
 
-    const profileImage = document.querySelector('img.profile-image');
-    const profileImageSrc = profileImage.src;
-    const profileImageDiv = profileImage.parentNode;
-    profileImageDiv.appendChild(copyButton);
+    //TOOD: remove timeout and find a way to wait for whole page to load
+    setTimeout(() => {
+        const iconImg = document.createElement("img");
+        iconImg.src = chrome.runtime.getURL("src/assets/icons/baguette.svg");
+        iconImg.classList.add("copy-img");
 
-    copyButton.addEventListener('click', async function () {
-        //copying to clipboard using existing button
-        const existingButton = document.querySelector('button.profile-util-copy');
-        existingButton.click();
+        const copyButton = document.createElement("button");
+        copyButton.className = "copy-button";
+        copyButton.appendChild(iconImg);
 
-        //manipulate HTML string and rewrite into clipboard
-        const html = await getHTMLFromClipboard();
-        const updatedHTML = updateHTML(html);
-        await saveHTMLToClipboard(updatedHTML);
-    });
+        const profileImage = document.querySelector("img.profile-image");
+        const profileImageSrc = profileImage.src;
+        const profileImageDiv = profileImage.parentNode;
+        profileImageDiv.appendChild(copyButton);
 
-}, 5000);
+        copyButton.addEventListener("click", async function () {
+            //copying to clipboard using existing button
+            const existingButton = document.querySelector("button.profile-util-copy");
+            existingButton.click();
 
-function updateHTML(htmlString) {
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = htmlString;
+            //manipulate HTML string and rewrite into clipboard
+            const html = await getHTMLFromClipboard();
+            const updatedHTML = await updateHTML(html, csvData);
+            await saveHTMLToClipboard(updatedHTML);
+        });
+    }, 3000);
+}
 
-    const bulletPointListElement = tempElement.querySelector('ul');
+function getFrRatesByAuStandard(auStandard, csvData) {
+    const foundRow = csvData.find((row) => row.au_standard === auStandard);
 
-    const standardRateListItemElement = bulletPointListElement.querySelector('li:first-child');
-
-    const prepaidRateListItemElement = bulletPointListElement.querySelector('li:last-child');
-    if (prepaidRateListItemElement) {
-        prepaidRateListItemElement.innerHTML = prepaidRateListItemElement.innerHTML.replace('40h', '37,5h');
-        const termsAndConditionsElement = prepaidRateListItemElement.querySelector('a');
-        if (termsAndConditionsElement) {
-            termsAndConditionsElement.setAttribute('href', 'https://ssw.fr/terms-and-conditions/');
-        }
+    if (foundRow) {
+        return {
+            frStandard: foundRow.fr_standard,
+            frPrepaid: foundRow.fr_prepaid,
+        };
+    } else {
+        return null;
     }
-
-    const locationElement = document.querySelector('svg.fa-location-dot').parentNode;
-    const location = locationElement.textContent;
-
-    const locationListItemElement = document.createElement('li');
-    locationListItemElement.innerText = "🗺️ Location: "+ location;
-    bulletPointListElement.appendChild(locationListItemElement);
-
-    const updatedHTML = tempElement.innerHTML;
-    tempElement.remove();
-    return updatedHTML;
 }
 
 async function getHTMLFromClipboard() {
@@ -70,14 +72,68 @@ async function getHTMLFromClipboard() {
     }
 }
 
-async function saveHTMLToClipboard(htmlString) {
+async function updateHTML(htmlString, csvData) {
+    const tempElement = document.createElement("div");
+    tempElement.innerHTML = htmlString;
 
+    const profilePicture = tempElement.querySelector('img');
+    if(profilePicture){
+        profilePicture.setAttribute('height','120');
+    }
+
+    const bulletPointListElement = tempElement.querySelector("ul");
+
+    updateRatesElements(bulletPointListElement, csvData);
+
+    addLocationElement(bulletPointListElement);
+
+    const updatedHTML = tempElement.innerHTML;
+    tempElement.remove();
+    return updatedHTML;
+}
+
+function updateRatesElements(bulletPointListElement, csvData) {
+    const standardRateListItemElement = bulletPointListElement.querySelector("li:first-child");
+    const prepaidRateListItemElement = bulletPointListElement.querySelector("li:last-child");
+    if (!standardRateListItemElement || !prepaidRateListItemElement) return;
+
+    const matchAuStandardRate = standardRateListItemElement.innerHTML.match(/\$\d+/);
+    const matchAuPrepaidRate = prepaidRateListItemElement.innerHTML.match(/\$\d+/);
+    if (!matchAuStandardRate || !matchAuPrepaidRate) return;
+
+    const auStandardRate = matchAuStandardRate[0];
+    const auPrepaidRate = matchAuPrepaidRate[0];
+    const frRates = getFrRatesByAuStandard(auStandardRate, csvData);
+    if (!frRates) return;
+
+    standardRateListItemElement.innerHTML = standardRateListItemElement.innerHTML.replace(auStandardRate + "+GST", frRates.frStandard + " + VAT");
+    prepaidRateListItemElement.innerHTML = prepaidRateListItemElement.innerHTML.replace(auPrepaidRate + "+GST", frRates.frPrepaid + " + VAT");
+    prepaidRateListItemElement.innerHTML = prepaidRateListItemElement.innerHTML.replace("40h", "37,5h");
+
+    const termsAndConditionsElement = prepaidRateListItemElement.querySelector("a");
+    if (!termsAndConditionsElement) return;
+
+    termsAndConditionsElement.setAttribute("href", "https://ssw.fr/terms-and-conditions/");
+}
+
+function addLocationElement(bulletPointListElement){
+    const locationElement = document.querySelector("svg.fa-location-dot").parentNode;
+    const location = locationElement.textContent;
+    const locationListItemElement = document.createElement("li");
+    locationListItemElement.innerText = "🗺️ Location: " + location;
+    bulletPointListElement.appendChild(locationListItemElement);
+}
+
+async function saveHTMLToClipboard(htmlString) {
     const clipboardItem = new ClipboardItem({
-        'text/html': new Blob([htmlString], { type: 'text/html' }),
-        'text/plain': new Blob([htmlString], { type: 'text/plain' })
+        "text/html": new Blob([htmlString], { type: "text/html" }),
+        "text/plain": new Blob([htmlString], { type: "text/plain" }),
     });
 
-    await navigator.clipboard.write([clipboardItem]).
-        then(() => console.log("Updated HTML for France wrote to clipboard!"),
-            error => alert(error));
+    await navigator.clipboard.write([clipboardItem]).then(
+        () => console.log("Updated HTML for France wrote to clipboard!"),
+        (error) => alert(error)
+    );
 }
+
+main();

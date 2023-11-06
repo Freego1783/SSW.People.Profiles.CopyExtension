@@ -5,14 +5,14 @@
   "content_scripts": [
     {
       "matches": ["https://ssw.com.au/people/*/*"],
-      "js": ["src/content-script.js"],
+      "js": ["src/content-script.js","src/libs/papaparse.min.js"],
       "css": ["src/assets/styles.css"],
       "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/assets/icons/*"],
+      "resources": ["src/assets/*"],
       "matches": ["*://*/*"]
     }
   ]
