@@ -27,7 +27,6 @@ async function main() {
         copyButton.appendChild(iconImg);
 
         const profileImage = document.querySelector("img.profile-image");
-        const profileImageSrc = profileImage.src;
         const profileImageDiv = profileImage.parentNode;
         profileImageDiv.appendChild(copyButton);
 
