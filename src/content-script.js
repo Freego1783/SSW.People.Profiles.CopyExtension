@@ -1,5 +1,5 @@
 async function main() {
-    const ratesCSV = chrome.runtime.getURL("src/assets/rates.csv");
+    const ratesCSV = chrome.runtime.getURL("src/assets/ratefs.csv");
     let csvData;
 
     await fetch(ratesCSV)
@@ -9,12 +9,23 @@ async function main() {
                 delimiter: ";",
                 header: true,
                 complete: function (results) {
-                    if (results.data.length > 0) {
+                    if (results.errors.length) {
+                        console.error("Error while reading CSV: ");
+                        results.errors.forEach(error => {
+                            console.error(error.message);
+                        });
+                        return;
+                    }
+
+                    if (results.data.length) {
                         csvData = results.data;
                     }
                 },
             });
-        });
+        })
+        .catch(error => console.log(`Error while getting rates CSV file: ${error.message}`));
+
+    if (!csvData) return;
 
     //TOOD: remove timeout and find a way to wait for whole page to load
     setTimeout(() => {
@@ -76,8 +87,8 @@ async function updateHTML(htmlString, csvData) {
     tempElement.innerHTML = htmlString;
 
     const profilePicture = tempElement.querySelector('img');
-    if(profilePicture){
-        profilePicture.setAttribute('height','120');
+    if (profilePicture) {
+        profilePicture.setAttribute('height', '120');
     }
 
     const bulletPointListElement = tempElement.querySelector("ul");
@@ -115,7 +126,7 @@ function updateRatesElements(bulletPointListElement, csvData) {
     termsAndConditionsElement.setAttribute("href", "https://ssw.fr/terms-and-conditions/");
 }
 
-function addLocationElement(bulletPointListElement){
+function addLocationElement(bulletPointListElement) {
     const locationElement = document.querySelector("svg.fa-location-dot").parentNode;
     const location = locationElement.textContent;
     const locationListItemElement = document.createElement("li");
