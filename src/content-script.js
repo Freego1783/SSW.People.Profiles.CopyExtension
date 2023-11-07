@@ -131,7 +131,7 @@ function translateToFrench(html){
     .replace("Prepaid:","Prépayé :")
     .replace("subject to","voir")
     .replace("prepaid terms","prestation prépayée")
-    .replace("Location","Localisation")
+    .replace("Location:","Localisation :")
     .replaceAll("+ VAT","HT");
 
     return html;
