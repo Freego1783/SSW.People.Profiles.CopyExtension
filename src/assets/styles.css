@@ -1,4 +1,4 @@
-.copy-button {
+.copy-buttons-container{
     position: absolute;
     bottom: 0;
     right: 0.5rem;
@@ -6,6 +6,10 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
+}
+
+.copy-buttons-container > button:not(:last-child){
+    margin-right: 6px;
 }
 
 .copy-img{
