@@ -2,21 +2,13 @@
     position: absolute;
     bottom: 0;
     right: 0.5rem;
-    background: white;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.copy-button:hover{
-    background-color: #E7E7E7;
-}
-
 .copy-img{
-    width:24px;
-    height: 24px;
+    width:25px;
+    height: 25px;
 }

@@ -30,10 +30,11 @@ async function main() {
     //TOOD: remove timeout and find a way to wait for whole page to load
     setTimeout(() => {
         const iconImg = document.createElement("img");
-        iconImg.src = chrome.runtime.getURL("src/assets/icons/baguette.svg");
+        iconImg.src = chrome.runtime.getURL("src/assets/icons/au_copy.svg");
         iconImg.classList.add("copy-img");
 
         const copyButton = document.createElement("button");
+        copyButton.setAttribute('title','Copy details');
         copyButton.className = "copy-button";
         copyButton.appendChild(iconImg);
 
