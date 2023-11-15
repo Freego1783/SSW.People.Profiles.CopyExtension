@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "content_scripts": [
     {
-      "matches": ["https://ssw.com.au/people/*/*"],
+      "matches": ["https://www.ssw.com.au/people/*/*", "https://ssw.com.au/people/*/*"],
       "js": ["src/content-script.js","src/libs/papaparse.min.js"],
       "css": ["src/assets/styles.css"],
       "run_at": "document_end"
