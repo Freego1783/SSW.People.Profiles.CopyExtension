@@ -1,11 +1,26 @@
 # SSW.People.Profiles.CopyExtension
 
-Simple Google Chrome Extension to copy an SSW Profile to clipboard and format the data for our French clients.
+Chrome Extension to copy SSW employee profiles and format them for French clients.
 
-## How to use 
+## Features
 
-1. Checkout the project
-2. Open Chrome and go to [chrome://extensions/](chrome://extensions/)
-3. Tick 'Developer Mode' in the upper-right corner
-4. Click on 'Load unpacked' and select the project folder
-5. Go on a SWW Profile and click the icons on the bottom-right of the profile picture
+- Adds an additional copy button on SSW profile pages  
+- Formats the profile data specifically for French audience emails  
+- Works alongside the existing on-site copy feature
+
+## Installation
+
+1. Clone or download this repository  
+2. Open Google Chrome and navigate to [chrome://extensions/](chrome://extensions/)  
+3. Enable **Developer mode** (top-right corner)  
+4. Click **Load unpacked** and select the project folder  
+
+## Usage
+
+1. Visit an SSW profile page  
+2. Hover over the profile picture  
+3. Click the new icon in the bottom-right corner to copy the formatted data  
+
+## Screenshot
+
+![Screenshot](src/assets/images/screenshot.png)
